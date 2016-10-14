@@ -23,10 +23,7 @@ int main( int argc, const char** argv )
 		exit(1);
 	}
 	
-	MemoryTable::Record *rec = people.search( 4, 
-									"fname", "steve"
-									"lname", "mathews"
-											);
+	MemoryTable::Record *rec = people.search( 4, "fname", "steve", "lname", "mathews" );
 	
 	if( rec == NULL )
 	{

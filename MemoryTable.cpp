@@ -45,7 +45,8 @@ MemoryTable::MemoryTable( const char* layout, int chunk_size ) {
 
 		if( details.size() >= 2 )
 		{
-			m_fields_by_name[details[0]] = m_fields_by_name.size();
+			int field_pos = m_fields_by_name.size();
+			m_fields_by_name[details[0]] = field_pos;
 			m_field_names.push_back( details[0] );
 
 			if( 	details[1] == "short" )
@@ -82,6 +83,13 @@ MemoryTable::MemoryTable( const char* layout, int chunk_size ) {
 						len++; // room for NULL terminated strings
 					}
 				}
+
+				if( details.size() > 3 )
+				{
+					if( details[3] == "pk" )
+						m_field_keys.push_back( field_pos );
+				}
+
 			}
 
 			m_field_types[m_field_types.size()] = field_type( typ, len, off );
@@ -102,6 +110,7 @@ MemoryTable::MemoryTable( const char* layout, int chunk_size ) {
     	m_table_info.m_field_names	= &m_field_names;
     	m_table_info.m_field_types	= &m_field_types;
     	m_table_info.m_fields_by_name	= &m_fields_by_name;
+    	m_table_info.m_field_keys	= &m_field_keys;
         m_table_info.m_row_size 	= &m_row_size;
 }
 
@@ -245,11 +254,11 @@ int MemoryTable::Record::compare( Record* comp )
     printf("MemoryTable::Record::compare() : this 0x%x : comp 0x%x \n",
 	this, comp );
     
-    int cols = (*(ptd->m_field_names)).size();
+    int keys = (*(ptd->m_field_keys)).size();
     
-    for( int i=0; i < cols; i++ )
+    for( int i=0; i < keys; i++ )
     {
-        field_type info = (*(ptd->m_field_types))[i];
+        field_type info = (*(ptd->m_field_types))[(*ptd->m_field_keys)[i]];
 
         switch( info.type )
         {
@@ -349,7 +358,7 @@ MemoryTable::Record* MemoryTable::search( int count, ... )
                 case Tsz:           // varchar
                 {			
                     char* pointer = va_arg(args, char* );
-                    strcpy( &(rec.pointer)[info.offset], pointer, info.length );
+                    strncpy( &(rec.pointer)[info.offset], pointer, info.length );
 					log("field_name=%s | pos=%d | pointer=%s | len=%d\n", field_name, pos, pointer, info.length );
                 } 
 				break;

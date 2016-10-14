@@ -37,9 +37,10 @@ public:
 		{}
     };
 
-    typedef std::vector< std::string >      field_names;
+    typedef std::vector< std::string >		field_names;
     typedef std::map< int, field_type > 	field_types;
     typedef std::map< std::string, int > 	fields_by_name;
+    typedef std::vector< int >			field_keys;
 
 
     mem_buffer      	m_mem;
@@ -48,6 +49,7 @@ public:
     field_names		m_field_names;
     field_types 	m_field_types;
     fields_by_name 	m_fields_by_name;
+    field_keys		m_field_keys;
     int                 m_row_size;
     int                 m_fullrec_size;
 
@@ -56,6 +58,7 @@ public:
     	field_names 	*m_field_names;
     	field_types 	*m_field_types;
     	fields_by_name 	*m_fields_by_name;
+	field_keys	*m_field_keys;
         int             *m_row_size;
     };
 	
